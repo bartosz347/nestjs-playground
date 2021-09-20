@@ -8,7 +8,8 @@ services:
       POSTGRES_DB: db
       POSTGRES_USER: db_user
       POSTGRES_PASSWORD: db_pass
-
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   redis:
     # TODO setup passwords
@@ -34,8 +35,5 @@ services:
     ports:
       - "127.0.0.1:3000:3000"
 
-  migrate:
-    build: .
-    depends_on:
-      - postgres-db
-    command: npx typeorm migration:run
+volumes:
+  postgres_data: { }
