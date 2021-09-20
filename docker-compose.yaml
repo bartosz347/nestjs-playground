@@ -1,4 +1,4 @@
-version: "3"
+version: "3.4"
 services:
   postgres-db:
     image: postgres:13-alpine
@@ -23,6 +23,11 @@ services:
       REDIS_PORT: 6379
       REDIS_HOST: redis
 
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+      DB_USER: db_user
+      DB_PASSWORD: db_pass
+
     depends_on:
       - postgres-db
       - redis
@@ -31,7 +36,14 @@ services:
       - "127.0.0.1:3000:3000"
 
   migrate:
-    build: .
+    build:
+      context: .
+      target: migrations
     depends_on:
       - postgres-db
-    command: npx typeorm migration:run
+    environment:
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+      DB_USER: db_user
+      DB_PASSWORD: db_pass
+    command: ts-node ./node_modules/typeorm/cli.js --config ormconfig.ts migration:run
